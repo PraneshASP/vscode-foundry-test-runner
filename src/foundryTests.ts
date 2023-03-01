@@ -37,7 +37,11 @@ function populateTestSuiteInfo(projectDir: string): [number[], string[]] {
         "." +
         fileNameArray[fileNameArray.length - 1];
 
-      if (fs.statSync(filePath).isDirectory() && !filePath.endsWith("lib")) {
+      if (
+        fs.statSync(filePath).isDirectory() &&
+        !filePath.endsWith("lib") &&
+        !filePath.endsWith("node_modules")
+      ) {
         traverseDirectory(filePath);
       } else if (fileExt === ".t.sol") {
         const fileContents = fs.readFileSync(filePath, "utf8");
