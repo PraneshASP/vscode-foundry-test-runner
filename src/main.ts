@@ -6,8 +6,6 @@ import { ExampleAdapter } from "./adapter";
 export async function activate(context: vscode.ExtensionContext) {
   const workspaceFolder = (vscode.workspace.workspaceFolders || [])[0];
 
-  // create a simple logger that can be configured with the configuration variables
-  // `exampleExplorer.logpanel` and `exampleExplorer.logfile`
   const log = new Log(
     "foundryTestExplorer",
     workspaceFolder,
@@ -33,6 +31,33 @@ export async function activate(context: vscode.ExtensionContext) {
         testHub,
         (workspaceFolder) => new ExampleAdapter(workspaceFolder, log),
         log
+      )
+    );
+    // Register CodeLens provider for foundry test files
+    context.subscriptions.push(
+      vscode.languages.registerCodeLensProvider(
+        { scheme: "file", pattern: "**/*.t.sol" },
+        {
+          provideCodeLenses(document) {
+            const lenses = [];
+
+            // Find all function test_ declarations and add CodeLens
+            const regex = /function test_/gm;
+            let match = regex.exec(document.getText());
+            while (match != null) {
+              const startPosition = document.positionAt(match.index);
+              const endPosition = document.positionAt(
+                match.index + match[0].length
+              );
+              const range = new vscode.Range(startPosition, endPosition);
+              const codeLens = new vscode.CodeLens(range);
+              lenses.push(codeLens);
+              match = regex.exec(document.getText());
+            }
+
+            return lenses;
+          },
+        }
       )
     );
   }
