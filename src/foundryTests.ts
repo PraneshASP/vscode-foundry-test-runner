@@ -1,0 +1,223 @@
+import * as vscode from "vscode";
+import {
+  TestSuiteInfo,
+  TestInfo,
+  TestRunStartedEvent,
+  TestRunFinishedEvent,
+  TestSuiteEvent,
+  TestEvent,
+} from "vscode-test-adapter-api";
+import * as fs from "fs";
+import * as path from "path";
+import * as cp from "child_process";
+
+let testSuite: TestSuiteInfo;
+
+function getTestFunctionLineNumbers(projectDir: string): [number[], string[]] {
+  testSuite = {
+    type: "suite",
+    id: "root",
+    label: "Foundry tests",
+    children: [],
+  };
+  const testFunctionLineNumbers: number[] = [];
+  const testFunctionNames: string[] = [];
+  const testContractNames: string[] = [];
+
+  const traverseDirectory = (directoryPath: string) => {
+    const files = fs.readdirSync(directoryPath);
+    for (const file of files) {
+      const filePath = path.join(directoryPath, file);
+      const fileNameArray = filePath.split(".");
+      const fileExt =
+        "." +
+        fileNameArray[fileNameArray.length - 2] +
+        "." +
+        fileNameArray[fileNameArray.length - 1];
+
+      if (fs.statSync(filePath).isDirectory() && !filePath.endsWith("lib")) {
+        traverseDirectory(filePath);
+      } else if (fileExt === ".t.sol") {
+        const fileContents = fs.readFileSync(filePath, "utf8");
+        const lines = fileContents.split("\n");
+        const parts = filePath.split("/");
+        const fileName = parts[parts.length - 1];
+        const contractName = fileName.slice(0, fileName.indexOf(".t.sol"));
+        testContractNames.push(contractName);
+        let testFunctionNamesLocal: TestInfo[] = [];
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+
+          if (line.trim().startsWith("function test")) {
+            testFunctionLineNumbers.push(i + 1);
+            let functionNameArray = line.split(" ").filter(Boolean);
+            let functionNameCleaned = functionNameArray[1].slice(
+              0,
+              functionNameArray[1].indexOf("(")
+            );
+            testFunctionNames.push(functionNameCleaned);
+            testFunctionNamesLocal.push({
+              type: "test",
+              id: functionNameCleaned,
+              label: functionNameCleaned,
+            });
+          }
+        }
+        testSuite.children.push({
+          type: "suite",
+          id: contractName,
+          label: contractName,
+          children: testFunctionNamesLocal,
+        });
+      }
+    }
+  };
+
+  traverseDirectory(projectDir);
+  return [testFunctionLineNumbers, testFunctionNames];
+}
+
+export function loadFoundryTests(): Promise<TestSuiteInfo> {
+  getTestFunctionLineNumbers(getContractRootDir());
+  // let testSuiteLocal: TestSuiteInfo = {
+  //   type: "suite",
+  //   id: "root",
+  //   label: "Tests",
+  //   children: [],
+  // };
+  // let testNames: string[] = getTestFunctionLineNumbers(getContractRootDir())[1];
+  // let testLineNumbers: number[] = getTestFunctionLineNumbers(
+  //   getContractRootDir()
+  // )[0];
+
+  // testNames.map((name, idx) => {
+  //   testSuiteLocal.children.push({
+  //     type: "test",
+  //     id: name,
+  //     label: name,
+  //     line: testLineNumbers[idx],
+  //   });
+  // });
+  // //testSuite = testSuiteLocal;
+  console;
+  return Promise.resolve<TestSuiteInfo>(testSuite);
+}
+
+export async function runFoundryTests(
+  tests: string[],
+  testStatesEmitter: vscode.EventEmitter<
+    TestRunStartedEvent | TestRunFinishedEvent | TestSuiteEvent | TestEvent
+  >
+): Promise<void> {
+  for (const suiteOrTestId of tests) {
+    const node = findNode(testSuite, suiteOrTestId);
+    if (node) {
+      await runNode(node, testStatesEmitter);
+    }
+  }
+}
+
+function findNode(
+  searchNode: TestSuiteInfo | TestInfo,
+  id: string
+): TestSuiteInfo | TestInfo | undefined {
+  if (searchNode.id === id) {
+    return searchNode;
+  } else if (searchNode.type === "suite") {
+    for (const child of searchNode.children) {
+      const found = findNode(child, id);
+      if (found) return found;
+    }
+  }
+  return undefined;
+}
+function getContractRootDir(): string {
+  let activeDoc = vscode.window.activeTextEditor.document;
+
+  let activeFile = activeDoc.fileName;
+
+  const contractPathArray = activeFile.split("/");
+  let contractName = contractPathArray[contractPathArray.length - 1];
+  contractName = contractName.substring(0, contractName.length - 4);
+  contractPathArray.pop();
+  let currentDir = contractPathArray.join("/");
+  while (!fs.existsSync(path.join(currentDir, "foundry.toml"))) {
+    currentDir = path.join(currentDir, "..");
+  }
+
+  return currentDir;
+}
+let contractDir: string;
+let outputChannel: vscode.OutputChannel;
+async function runNode(
+  node: TestSuiteInfo | TestInfo,
+  testStatesEmitter: vscode.EventEmitter<
+    TestRunStartedEvent | TestRunFinishedEvent | TestSuiteEvent | TestEvent
+  >
+): Promise<void> {
+  if (node.type === "suite") {
+    testStatesEmitter.fire(<TestSuiteEvent>{
+      type: "suite",
+      suite: node.id,
+      state: "running",
+    });
+
+    for (const child of node.children) {
+      await runNode(child, testStatesEmitter);
+    }
+
+    testStatesEmitter.fire(<TestSuiteEvent>{
+      type: "suite",
+      suite: node.id,
+      state: "completed",
+    });
+  } else {
+    node.type === "test";
+
+    if (contractDir === undefined) {
+      contractDir = getContractRootDir();
+    }
+
+    /////////////////
+    // Create a new output channel
+    if (!outputChannel) {
+      outputChannel = vscode.window.createOutputChannel(
+        "Foundry test explorer",
+        "shellscript"
+      );
+
+      // Show the output channel
+    }
+    // Execute a command and capture its output
+    const command = `cd ${contractDir} && forge test --match ${node.id.slice(
+      0,
+      -2
+    )}`;
+
+    const child = cp.exec(command);
+    child.stdout.on("data", (data: Buffer) => {
+      outputChannel.appendLine(data.toString().replace(/\x1b\[[0-9;]*m/g, ""));
+    });
+    child.stderr.on("data", (data: Buffer) => {
+      outputChannel.appendLine(data.toString().replace(/\x1b\[[0-9;]*m/g, ""));
+    });
+    child.on("exit", (code, signal) => {
+      console.log(
+        `Child process exited with code ${code} and signal ${signal}`
+      );
+    });
+
+    /////////////////
+    testStatesEmitter.fire(<TestEvent>{
+      type: "test",
+      test: node.id,
+      state: "running",
+    });
+
+    testStatesEmitter.fire(<TestEvent>{
+      type: "test",
+      test: node.id,
+      state: "passed",
+    });
+  }
+}

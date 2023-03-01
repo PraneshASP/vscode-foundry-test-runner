@@ -1,10 +1,9 @@
 {
-  "name": "vscode-example-test-adapter",
-  "displayName": "Example Test Explorer",
-  "description": "Run your Example tests in the Sidebar of Visual Studio Code",
+  "name": "vscode-foundry-test-adapter",
+  "displayName": "Foundry Test Explorer",
+  "description": "Run your Foundry tests in the Sidebar of Visual Studio Code",
   "icon": "img/icon.png",
-  "author": "Holger Benl <hbenl@evandor.de>",
-  "publisher": "hbenl",
+  "author": "PraneshASP <praneshas2000@gmail.com>",
   "version": "0.0.1",
   "license": "MIT",
   "homepage": "https://github.com/hbenl/vscode-example-test-adapter",
@@ -16,11 +15,12 @@
     "url": "https://github.com/hbenl/vscode-example-test-adapter/issues"
   },
   "categories": [
-    "Other"
+    "Testing"
   ],
   "keywords": [
-    "test",
-    "testing"
+    "Solidity",
+    "Foundry",
+    "EVM"
   ],
   "main": "out/main.js",
   "scripts": {
@@ -37,6 +37,7 @@
     "vscode-test-adapter-util": "^0.7.0"
   },
   "devDependencies": {
+    "@types/node": "^18.14.2",
     "@types/vscode": "~1.23.0",
     "typescript": "^3.5.3",
     "vsce": "^1.95.1"
@@ -53,14 +54,14 @@
   "contributes": {
     "configuration": {
       "type": "object",
-      "title": "Example Test Explorer configuration",
+      "title": "Foundry Test Explorer configuration",
       "properties": {
-        "exampleExplorer.logpanel": {
+        "foundryTestExplorer.logpanel": {
           "description": "write diagnotic logs to an output panel",
           "type": "boolean",
           "scope": "resource"
         },
-        "exampleExplorer.logfile": {
+        "foundryTestExplorer.logfile": {
           "description": "write diagnostic logs to the given file",
           "type": "string",
           "scope": "resource"
