@@ -6,13 +6,13 @@
   "author": "PraneshASP <praneshas2000@gmail.com>",
   "version": "0.0.1",
   "license": "MIT",
-  "homepage": "https://github.com/hbenl/vscode-example-test-adapter",
+  "homepage": "https://github.com/PraneshASP/vscode-foundry-test-adapter",
   "repository": {
     "type": "git",
-    "url": "https://github.com/hbenl/vscode-example-test-adapter.git"
+    "url": "https://github.com/PraneshASP/vscode-foundry-test-adapter.git"
   },
   "bugs": {
-    "url": "https://github.com/hbenl/vscode-example-test-adapter/issues"
+    "url": "https://github.com/PraneshASP/vscode-foundry-test-adapter/issues"
   },
   "categories": [
     "Testing"
@@ -52,12 +52,26 @@
     "*"
   ],
   "contributes": {
+    "languages": [
+      {
+        "id": "solidity",
+        "extensions": [
+          ".sol",
+          ".t.sol"
+        ]
+      }
+    ],
     "configuration": {
       "type": "object",
       "title": "Foundry Test Explorer configuration",
+      "codeLens": {
+        "testExplorer": {
+          "enabled": true
+        }
+      },
       "properties": {
         "foundryTestExplorer.logpanel": {
-          "description": "write diagnotic logs to an output panel",
+          "description": "write diagnostic logs to an output panel",
           "type": "boolean",
           "scope": "resource"
         },
