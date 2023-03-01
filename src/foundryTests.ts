@@ -12,8 +12,10 @@ import * as path from "path";
 import * as cp from "child_process";
 
 let testSuite: TestSuiteInfo;
+let projectRootDir: string;
+let outputChannel: vscode.OutputChannel;
 
-function getTestFunctionLineNumbers(projectDir: string): [number[], string[]] {
+function populateTestSuiteInfo(projectDir: string): [number[], string[]] {
   testSuite = {
     type: "suite",
     id: "root",
@@ -60,6 +62,8 @@ function getTestFunctionLineNumbers(projectDir: string): [number[], string[]] {
               type: "test",
               id: functionNameCleaned,
               label: functionNameCleaned,
+              file: filePath,
+              line: i + 1,
             });
           }
         }
@@ -78,28 +82,8 @@ function getTestFunctionLineNumbers(projectDir: string): [number[], string[]] {
 }
 
 export function loadFoundryTests(): Promise<TestSuiteInfo> {
-  getTestFunctionLineNumbers(getContractRootDir());
-  // let testSuiteLocal: TestSuiteInfo = {
-  //   type: "suite",
-  //   id: "root",
-  //   label: "Tests",
-  //   children: [],
-  // };
-  // let testNames: string[] = getTestFunctionLineNumbers(getContractRootDir())[1];
-  // let testLineNumbers: number[] = getTestFunctionLineNumbers(
-  //   getContractRootDir()
-  // )[0];
+  populateTestSuiteInfo(getContractRootDir());
 
-  // testNames.map((name, idx) => {
-  //   testSuiteLocal.children.push({
-  //     type: "test",
-  //     id: name,
-  //     label: name,
-  //     line: testLineNumbers[idx],
-  //   });
-  // });
-  // //testSuite = testSuiteLocal;
-  console;
   return Promise.resolve<TestSuiteInfo>(testSuite);
 }
 
@@ -147,8 +131,7 @@ function getContractRootDir(): string {
 
   return currentDir;
 }
-let contractDir: string;
-let outputChannel: vscode.OutputChannel;
+
 async function runNode(
   node: TestSuiteInfo | TestInfo,
   testStatesEmitter: vscode.EventEmitter<
@@ -174,29 +157,45 @@ async function runNode(
   } else {
     node.type === "test";
 
-    if (contractDir === undefined) {
-      contractDir = getContractRootDir();
+    if (projectRootDir === undefined) {
+      projectRootDir = getContractRootDir();
     }
 
-    /////////////////
     // Create a new output channel
     if (!outputChannel) {
       outputChannel = vscode.window.createOutputChannel(
         "Foundry test explorer",
         "shellscript"
       );
-
-      // Show the output channel
+      outputChannel.show();
     }
     // Execute a command and capture its output
-    const command = `cd ${contractDir} && forge test --match ${node.id.slice(
-      0,
-      -2
-    )}`;
+    // prettier-ignore
+    const command = `cd ${projectRootDir} && forge test -vv --match ${node.id.slice(0,-2)}`;
+
+    testStatesEmitter.fire(<TestEvent>{
+      type: "test",
+      test: node.id,
+      state: "running",
+    });
 
     const child = cp.exec(command);
     child.stdout.on("data", (data: Buffer) => {
-      outputChannel.appendLine(data.toString().replace(/\x1b\[[0-9;]*m/g, ""));
+      let output = data.toString().replace(/\x1b\[[0-9;]*m/g, "");
+      outputChannel.appendLine(output);
+      if (output.includes("FAIL")) {
+        testStatesEmitter.fire(<TestEvent>{
+          type: "test",
+          test: node.id,
+          state: "failed",
+        });
+      } else {
+        testStatesEmitter.fire(<TestEvent>{
+          type: "test",
+          test: node.id,
+          state: "passed",
+        });
+      }
     });
     child.stderr.on("data", (data: Buffer) => {
       outputChannel.appendLine(data.toString().replace(/\x1b\[[0-9;]*m/g, ""));
@@ -205,19 +204,6 @@ async function runNode(
       console.log(
         `Child process exited with code ${code} and signal ${signal}`
       );
-    });
-
-    /////////////////
-    testStatesEmitter.fire(<TestEvent>{
-      type: "test",
-      test: node.id,
-      state: "running",
-    });
-
-    testStatesEmitter.fire(<TestEvent>{
-      type: "test",
-      test: node.id,
-      state: "passed",
     });
   }
 }
