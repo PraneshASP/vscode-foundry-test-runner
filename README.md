@@ -68,8 +68,9 @@ Contributions are welcomed. Any contributions you make are **greatly appreciated
 
 ## TODO
 
-- [ ] Contract-level codelens to run test suites from the editor
-- [ ] Flexibility to set the verbosity level
+- [x] Contract-level codelens to run test suites from the editor
+- [x] Flexibility to set the verbosity level
+- [ ] Add options to exclude tests and test files
 - [ ] Add option to debug the tests
 
 ## Acknowledgement
