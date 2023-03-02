@@ -1,6 +1,6 @@
 <img align="right" width="150" height="150" top="100" src="./assets/logo.png">
 
-# VSCode Foundry Test Adapter • [![license](https://img.shields.io/badge/MIT-brown.svg?label=license)](https://github.com/PraneshASP/vscode-foundry-test-adapter/blob/main/LICENSE)
+# VSCode Foundry Test Runner • [![license](https://img.shields.io/badge/MIT-brown.svg?label=license)](https://github.com/PraneshASP/vscode-foundry-test-adapter/blob/main/LICENSE)
 
 An extension for VSCode editor to easily explore and run tests using the [foundry framework](https://github.com/gakonst/foundry). This is an adapter that is intended to work with the [Test Explorer UI](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-test-explorer) extension.
 
@@ -10,9 +10,11 @@ An extension for VSCode editor to easily explore and run tests using the [foundr
 
 ### Features at a glance:
 
-- Shows a Test Explorer in the Test view in VS Code's sidebar with all detected tests and suites and their state
+- Displays a Test Explorer in the Test view of VS Code's sidebar with all detected tests and suites along with their state.
 - Adds CodeLenses to your test files for running specific tests.
 - Display test logs in the Output panel.
+- Allows for verbosity configuration.
+- Exclude test files and test functions.
 - More to come....
 
 ---
@@ -34,19 +36,19 @@ The usage of this extension is straightforward.
 - Click on the Test Icon displayed on the Activity bar.
 - Run your tests using the Run icon in the Test Explorer or the CodeLenses in your test file
 
-### 1.) Running a single test from the explorer
+### 1.) Run a single test from the explorer
 
 <img src="./assets/single_test.gif" />
 
 ---
 
-### 2.) Running a test suite (all the tests in a contract) from the explorer
+### 2.) Run a test suite (all the tests in a contract) from the explorer
 
 <img src="./assets/run_suite.gif" />
 
 ---
 
-### 3.) Running a test using the Codelens (inline option in the editor)
+### 3.) Run a test using the Codelens (inline option in the editor)
 
 <img src="./assets/codelens.gif" />
 
@@ -70,7 +72,7 @@ Contributions are welcomed. Any contributions you make are **greatly appreciated
 
 - [x] Contract-level codelens to run test suites from the editor
 - [x] Flexibility to set the verbosity level
-- [ ] Add options to exclude tests and test files
+- [x] Add options to exclude tests and test files
 - [ ] Add option to debug the tests
 
 ## Acknowledgement
