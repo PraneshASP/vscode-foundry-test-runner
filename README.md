@@ -30,7 +30,8 @@ The following will need to be installed in order to use this template. Please fo
 
 ## Usage
 
-The usage of this extension is straightforward. 
+The usage of this extension is straightforward.
+
 - Install this adapter extension.
 - Install the [Test Explorer UI](https://marketplace.visualstudio.com/items?itemName=hbenl.vscode-test-explorer) extension.
 - Click on the Test Icon displayed on the Activity bar.
@@ -74,6 +75,7 @@ Contributions are welcomed. Any contributions you make are **greatly appreciated
 - [x] Flexibility to set the verbosity level
 - [x] Add options to exclude tests and test files
 - [ ] Add option to debug the tests
+- [ ] Display coverage?
 
 ## Acknowledgement
 
