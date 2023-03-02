@@ -75,6 +75,16 @@
           "type": "string",
           "default": "-vv",
           "description": "Defines the verbosity level of test output."
+        },
+        "foundryTestRunner.excludeTestContracts": {
+          "type": "string",
+          "default": "",
+          "description": "Enter the test contract names without .t.sol seperated by comma. \n For ex: InvariantTests, ForkTests"
+        },
+        "foundryTestRunner.excludeTestFunctions": {
+          "type": "string",
+          "default": "",
+          "description": "Enter the test names without parentheses. \n For ex: testDeployment, testFuzz_AddNumbers"
         }
       }
     }
