@@ -28,6 +28,10 @@ function populateTestSuiteInfo(projectDir: string) {
       .getConfiguration("foundryTestRunner")
       .excludeTestContracts.toLowerCase();
 
+    const excludedFunctions = vscode.workspace
+      .getConfiguration("foundryTestRunner")
+      .excludeTestFunctions.toLowerCase();
+
     const files = fs.readdirSync(directoryPath);
     for (const file of files) {
       const filePath = path.join(directoryPath, file);
@@ -63,6 +67,9 @@ function populateTestSuiteInfo(projectDir: string) {
               0,
               functionNameArray[1].indexOf("(")
             );
+
+            if (excludedFunctions.includes(functionNameCleaned.toLowerCase()))
+              continue;
             testFunctionNames.push({
               type: "test",
               id: functionNameCleaned,
