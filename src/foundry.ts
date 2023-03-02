@@ -15,18 +15,19 @@ let testSuite: TestSuiteInfo;
 let projectRootDir: string;
 let outputChannel: vscode.OutputChannel;
 
-function populateTestSuiteInfo(projectDir: string): [number[], string[]] {
+function populateTestSuiteInfo(projectDir: string) {
   testSuite = {
     type: "suite",
     id: "root",
     label: "Foundry tests",
     children: [],
   };
-  const testFunctionLineNumbers: number[] = [];
-  const testFunctionNames: string[] = [];
-  const testContractNames: string[] = [];
 
   const traverseDirectory = (directoryPath: string) => {
+    const excludedContracts = vscode.workspace
+      .getConfiguration("foundryTestRunner")
+      .excludeTestContracts.toLowerCase();
+
     const files = fs.readdirSync(directoryPath);
     for (const file of files) {
       const filePath = path.join(directoryPath, file);
@@ -49,22 +50,20 @@ function populateTestSuiteInfo(projectDir: string): [number[], string[]] {
         const parts = filePath.split("/");
         const fileName = parts[parts.length - 1];
         const contractName = fileName.slice(0, fileName.indexOf(".t.sol"));
-        testContractNames.push(contractName);
-        let testFunctionNamesLocal: TestInfo[] = [];
+        if (excludedContracts.includes(contractName.toLowerCase())) continue;
+        let testFunctionNames: TestInfo[] = [];
         let suiteLineNumber;
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
           if (line.trim().includes("contract") && line.trim().includes("Test"))
             suiteLineNumber = i;
           if (line.trim().startsWith("function test")) {
-            testFunctionLineNumbers.push(i + 1);
             let functionNameArray = line.split(" ").filter(Boolean);
             let functionNameCleaned = functionNameArray[1].slice(
               0,
               functionNameArray[1].indexOf("(")
             );
-            testFunctionNames.push(functionNameCleaned);
-            testFunctionNamesLocal.push({
+            testFunctionNames.push({
               type: "test",
               id: functionNameCleaned,
               label: functionNameCleaned,
@@ -77,7 +76,7 @@ function populateTestSuiteInfo(projectDir: string): [number[], string[]] {
           type: "suite",
           id: contractName,
           label: contractName,
-          children: testFunctionNamesLocal,
+          children: testFunctionNames,
           file: filePath,
           line: suiteLineNumber,
         });
@@ -86,7 +85,6 @@ function populateTestSuiteInfo(projectDir: string): [number[], string[]] {
   };
 
   traverseDirectory(projectDir);
-  return [testFunctionLineNumbers, testFunctionNames];
 }
 
 export function loadFoundryTests(): Promise<TestSuiteInfo> {
@@ -182,7 +180,7 @@ async function runNode(
 
     // Execute a command and capture its output
     // prettier-ignore
-    const command = `cd ${projectRootDir} && forge test ${verbosity} --match ${node.id.slice(0,-2)}`;
+    const command = `cd ${projectRootDir} && forge test ${verbosity} --match-test ${node.id.slice(0,-2)}`;
 
     testStatesEmitter.fire(<TestEvent>{
       type: "test",
