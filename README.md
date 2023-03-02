@@ -1,4 +1,4 @@
-<img align="right" width="150" height="150" top="100" src="./assets/logo.jpg">
+<img align="right" width="150" height="150" top="100" src="./assets/logo.png">
 
 # VSCode Foundry Test Adapter • [![license](https://img.shields.io/badge/MIT-brown.svg?label=license)](https://github.com/PraneshASP/vscode-foundry-test-adapter/blob/main/LICENSE)
 
