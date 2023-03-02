@@ -9,13 +9,9 @@ import {
   TestEvent,
 } from "vscode-test-adapter-api";
 import { Log } from "vscode-test-adapter-util";
-import { loadFoundryTests, runFoundryTests } from "./foundryTests";
+import { loadFoundryTests, runFoundryTests } from "./foundry";
 
-/**
- * This class is intended as a starting point for implementing a "real" TestAdapter.
- * The file `README.md` contains further instructions.
- */
-export class ExampleAdapter implements TestAdapter {
+export class FoundryTestAdapter implements TestAdapter {
   private disposables: { dispose(): void }[] = [];
 
   private readonly testsEmitter = new vscode.EventEmitter<
@@ -42,7 +38,7 @@ export class ExampleAdapter implements TestAdapter {
     public readonly workspace: vscode.WorkspaceFolder,
     private readonly log: Log
   ) {
-    this.log.info("Initializing example adapter");
+    this.log.info("Initializing Foundry Test adapter");
 
     this.disposables.push(this.testsEmitter);
     this.disposables.push(this.testStatesEmitter);

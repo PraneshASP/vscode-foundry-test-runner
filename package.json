@@ -1,9 +1,10 @@
 {
   "name": "vscode-foundry-test-adapter",
-  "displayName": "Foundry Test Explorer",
+  "displayName": "Foundry Test Runner",
   "description": "Run your Foundry tests in the Sidebar of Visual Studio Code",
-  "icon": "img/icon.png",
+  "icon": "assets/logo.png",
   "author": "PraneshASP <praneshas2000@gmail.com>",
+  "publisher": "PraneshASP",
   "version": "0.0.1",
   "license": "MIT",
   "homepage": "https://github.com/PraneshASP/vscode-foundry-test-adapter",
@@ -63,22 +64,17 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "Foundry Test Explorer configuration",
+      "title": "Foundry Test Runner configuration",
       "codeLens": {
         "testExplorer": {
           "enabled": true
         }
       },
       "properties": {
-        "foundryTestExplorer.logpanel": {
-          "description": "write diagnostic logs to an output panel",
-          "type": "boolean",
-          "scope": "resource"
-        },
-        "foundryTestExplorer.logfile": {
-          "description": "write diagnostic logs to the given file",
+        "foundryTestRunner.verbosity": {
           "type": "string",
-          "scope": "resource"
+          "default": "-vv",
+          "description": "Defines the verbosity level of test output."
         }
       }
     }
