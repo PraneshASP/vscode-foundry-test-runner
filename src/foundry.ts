@@ -51,9 +51,11 @@ function populateTestSuiteInfo(projectDir: string): [number[], string[]] {
         const contractName = fileName.slice(0, fileName.indexOf(".t.sol"));
         testContractNames.push(contractName);
         let testFunctionNamesLocal: TestInfo[] = [];
+        let suiteLineNumber;
         for (let i = 0; i < lines.length; i++) {
           const line = lines[i];
-
+          if (line.trim().includes("contract") && line.trim().includes("Test"))
+            suiteLineNumber = i;
           if (line.trim().startsWith("function test")) {
             testFunctionLineNumbers.push(i + 1);
             let functionNameArray = line.split(" ").filter(Boolean);
@@ -67,7 +69,7 @@ function populateTestSuiteInfo(projectDir: string): [number[], string[]] {
               id: functionNameCleaned,
               label: functionNameCleaned,
               file: filePath,
-              line: i + 1,
+              line: i,
             });
           }
         }
@@ -76,6 +78,8 @@ function populateTestSuiteInfo(projectDir: string): [number[], string[]] {
           id: contractName,
           label: contractName,
           children: testFunctionNamesLocal,
+          file: filePath,
+          line: suiteLineNumber,
         });
       }
     }
@@ -173,9 +177,12 @@ async function runNode(
       );
       outputChannel.show();
     }
+    const verbosity =
+      vscode.workspace.getConfiguration("foundryTestRunner").verbosity;
+
     // Execute a command and capture its output
     // prettier-ignore
-    const command = `cd ${projectRootDir} && forge test -vv --match ${node.id.slice(0,-2)}`;
+    const command = `cd ${projectRootDir} && forge test ${verbosity} --match ${node.id.slice(0,-2)}`;
 
     testStatesEmitter.fire(<TestEvent>{
       type: "test",
