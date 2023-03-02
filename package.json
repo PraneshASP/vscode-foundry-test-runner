@@ -1,5 +1,5 @@
 {
-  "name": "vscode-foundry-test-adapter",
+  "name": "vscode-foundry-test-runner",
   "displayName": "Foundry Test Runner",
   "description": "Run your Foundry tests in the Sidebar of Visual Studio Code",
   "icon": "assets/logo.png",
@@ -7,13 +7,13 @@
   "publisher": "PraneshASP",
   "version": "0.0.1",
   "license": "MIT",
-  "homepage": "https://github.com/PraneshASP/vscode-foundry-test-adapter",
+  "homepage": "https://github.com/PraneshASP/vscode-foundry-test-runner",
   "repository": {
     "type": "git",
-    "url": "https://github.com/PraneshASP/vscode-foundry-test-adapter.git"
+    "url": "https://github.com/PraneshASP/vscode-foundry-test-runner.git"
   },
   "bugs": {
-    "url": "https://github.com/PraneshASP/vscode-foundry-test-adapter/issues"
+    "url": "https://github.com/PraneshASP/vscode-foundry-test-runner/issues"
   },
   "categories": [
     "Testing"
