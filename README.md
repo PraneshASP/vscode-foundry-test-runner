@@ -75,6 +75,7 @@ Contributions are welcomed. Any contributions you make are **greatly appreciated
 - [x] Flexibility to set the verbosity level
 - [x] Add options to exclude tests and test files
 - [ ] Add option to debug the tests
+- [ ] Optimize the `runNode()` function
 - [ ] Display coverage?
 
 ## Acknowledgement
