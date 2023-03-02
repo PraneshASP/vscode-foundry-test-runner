@@ -55,6 +55,12 @@ The usage of this extension is straightforward.
 
 ---
 
+### 4.) Configure verbosity, exclude test contracts and functions
+
+<img src="./assets/settings.png" />
+
+---
+
 <!-- CONTRIBUTING -->
 
 ## Contributing
