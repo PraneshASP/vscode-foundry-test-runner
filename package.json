@@ -64,7 +64,7 @@
     ],
     "configuration": {
       "type": "object",
-      "title": "Foundry Test Runner configuration",
+      "title": "FoundryTestRunner",
       "codeLens": {
         "testExplorer": {
           "enabled": true
@@ -74,7 +74,20 @@
         "foundryTestRunner.verbosity": {
           "type": "string",
           "default": "-vv",
-          "description": "Defines the verbosity level of test output."
+          "enum": [
+            "-v",
+            "-vv",
+            "-vvv",
+            "-vvvv",
+            "-vvvvv"
+          ],
+          "enumDescriptions": [
+            "No logs printed",
+            "Print logs for the tests",
+            "Print execution traces if a test fails",
+            "Print execution traces for all tests, and setup traces for failing tests",
+            "Print execution and setup traces for all tests"
+          ]
         }
       }
     }
