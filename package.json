@@ -1,11 +1,11 @@
 {
-  "name": "vscode-foundry-test-runner",
+  "name": "vscode-foundry-test-adapter",
   "displayName": "Foundry Test Runner",
   "description": "Run your Foundry tests in the Sidebar of Visual Studio Code",
   "icon": "assets/logo.png",
   "author": "PraneshASP <praneshas2000@gmail.com>",
   "publisher": "PraneshASP",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "license": "MIT",
   "homepage": "https://github.com/PraneshASP/vscode-foundry-test-runner",
   "repository": {
@@ -30,7 +30,8 @@
     "watch": "tsc -w",
     "rebuild": "npm run clean && npm run build",
     "package": "vsce package",
-    "publish": "vsce publish"
+    "publish": "vsce publish",
+    "format": "prettier --config .prettierrc 'src/**/*.ts' --write"
   },
   "dependencies": {
     "tslib": "^1.9.3",
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@types/node": "^18.14.2",
     "@types/vscode": "~1.23.0",
+    "prettier": "^3.0.1",
     "typescript": "^3.5.3",
     "vsce": "^1.95.1"
   },
