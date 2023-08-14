@@ -147,18 +147,18 @@ function getContractRootDir(): string {
 
     let activeFile = activeDoc.fileName;
 
-    const contractPathArray = activeFile.split("/");
-    let contractName = contractPathArray[contractPathArray.length - 1];
-    contractName = contractName.substring(0, contractName.length - 4);
-    contractPathArray.pop();
-    let currentDir = contractPathArray.join("/");
+    let currentDirectory = path.dirname(activeFile);
 
-    while (
-        currentDir !== path.parse(currentDir).root &&
-        !fs.existsSync(path.join(currentDir, "foundry.toml"))
-    ) {
-        return currentDir;
+    while (currentDirectory !== "/") {
+        console.log("Current dir", currentDirectory);
+
+        if (fs.existsSync(path.join(currentDirectory, "foundry.toml"))) {
+            return currentDirectory;
+        }
+        currentDirectory = path.dirname(currentDirectory);
     }
+
+    throw new Error("Project root not found.");
 }
 
 function captureFunctionsAndResults(output: string): { [key: string]: string } {
