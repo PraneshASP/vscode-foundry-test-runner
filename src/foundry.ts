@@ -109,8 +109,11 @@ export function loadFoundryTests(): Promise<TestSuiteInfo> {
     if (projectRootDir === undefined) {
         projectRootDir = getContractRootDir();
     }
-    populateTestSuiteInfo(projectRootDir);
+    if (projectRootDir == "__null__") {
+        return Promise.resolve<TestSuiteInfo>(testSuite);
+    }
 
+    populateTestSuiteInfo(projectRootDir);
     return Promise.resolve<TestSuiteInfo>(testSuite);
 }
 
@@ -150,15 +153,12 @@ function getContractRootDir(): string {
     let currentDirectory = path.dirname(activeFile);
 
     while (currentDirectory !== "/") {
-        console.log("Current dir", currentDirectory);
-
         if (fs.existsSync(path.join(currentDirectory, "foundry.toml"))) {
             return currentDirectory;
         }
         currentDirectory = path.dirname(currentDirectory);
     }
-
-    throw new Error("Project root not found.");
+    return "__null__";
 }
 
 function captureFunctionsAndResults(output: string): { [key: string]: string } {
@@ -181,6 +181,7 @@ async function runNode(
 ): Promise<void> {
     if (projectRootDir === undefined) {
         projectRootDir = getContractRootDir();
+        if (projectRootDir == "__null__") return;
     }
     if (node.type === "suite") {
         testStatesEmitter.fire(<TestSuiteEvent>{
