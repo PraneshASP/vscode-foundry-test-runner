@@ -90,14 +90,18 @@ function populateTestSuiteInfo(projectDir: string) {
                         });
                     }
                 }
-                testSuite.children.push({
-                    type: "suite",
-                    id: contractName,
-                    label: contractName,
-                    children: testFunctionNames,
-                    file: filePath,
-                    line: suiteLineNumber,
-                });
+
+                /// Ignore files that doesn't have any tests
+                if (testFunctionNames.length > 0) {
+                    testSuite.children.push({
+                        type: "suite",
+                        id: contractName,
+                        label: contractName,
+                        children: testFunctionNames,
+                        file: filePath,
+                        line: suiteLineNumber,
+                    });
+                }
             }
         }
     };
