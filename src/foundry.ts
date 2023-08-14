@@ -79,8 +79,9 @@ function populateTestSuiteInfo(projectDir: string) {
                             excludedFunctions.includes(
                                 functionNameCleaned.toLowerCase(),
                             )
-                        )
+                        ) {
                             continue;
+                        }
                         testFunctionNames.push({
                             type: "test",
                             id: contractName + "::" + functionNameCleaned,
@@ -206,7 +207,12 @@ async function runNode(
             vscode.workspace.getConfiguration("foundryTestRunner").verbosity;
         // Execute a command and capture its output
         // prettier-ignore
-        const command = `cd ${projectRootDir} && forge test ${verbosity} --mc ${node.label}`;
+        let command;
+        if (node.id == "root") {
+            command = `cd ${projectRootDir} && forge test ${verbosity}`;
+        } else {
+            command = `cd ${projectRootDir} && forge test ${verbosity} --mc ${node.label}`;
+        }
 
         const child = cp.exec(command);
 
@@ -214,7 +220,6 @@ async function runNode(
             let output = data.toString().replace(/\x1b\[[0-9;]*m/g, "");
             if (output.includes("PASS") || output.includes("FAIL.")) {
                 let testResults = captureFunctionsAndResults(output);
-
                 outputChannel.appendLine(output);
                 for (var testResult in testResults) {
                     testStatesEmitter.fire(<TestEvent>{
