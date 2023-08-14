@@ -83,7 +83,7 @@ function populateTestSuiteInfo(projectDir: string) {
                             continue;
                         testFunctionNames.push({
                             type: "test",
-                            id: functionNameCleaned,
+                            id: contractName + "::" + functionNameCleaned,
                             label: functionNameCleaned,
                             file: filePath,
                             line: i,
@@ -95,7 +95,7 @@ function populateTestSuiteInfo(projectDir: string) {
                 if (testFunctionNames.length > 0) {
                     testSuite.children.push({
                         type: "suite",
-                        id: contractName,
+                        id: fileName + "::" + contractName,
                         label: contractName,
                         children: testFunctionNames,
                         file: filePath,
@@ -206,7 +206,7 @@ async function runNode(
             vscode.workspace.getConfiguration("foundryTestRunner").verbosity;
         // Execute a command and capture its output
         // prettier-ignore
-        const command = `cd ${projectRootDir} && forge test ${verbosity} --mc ${node.id}`;
+        const command = `cd ${projectRootDir} && forge test ${verbosity} --mc ${node.label}`;
 
         const child = cp.exec(command);
 
@@ -219,7 +219,7 @@ async function runNode(
                 for (var testResult in testResults) {
                     testStatesEmitter.fire(<TestEvent>{
                         type: "test",
-                        test: testResult,
+                        test: node.label + "::" + testResult,
                         state: testResults[testResult].toString(),
                     });
                 }
@@ -254,7 +254,7 @@ async function runNode(
 
         // Execute a command and capture its output
         // prettier-ignore
-        const command = `cd ${projectRootDir} && forge test ${verbosity} --match-test ${node.id.slice(0,-2)}`;
+        const command = `cd ${projectRootDir} && forge test ${verbosity} --match-test ${node.label.slice(0,-2)}`;
 
         testStatesEmitter.fire(<TestEvent>{
             type: "test",
