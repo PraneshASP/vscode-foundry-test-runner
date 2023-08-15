@@ -79,25 +79,30 @@ function populateTestSuiteInfo(projectDir: string) {
                             excludedFunctions.includes(
                                 functionNameCleaned.toLowerCase(),
                             )
-                        )
+                        ) {
                             continue;
+                        }
                         testFunctionNames.push({
                             type: "test",
-                            id: functionNameCleaned,
+                            id: contractName + "::" + functionNameCleaned,
                             label: functionNameCleaned,
                             file: filePath,
                             line: i,
                         });
                     }
                 }
-                testSuite.children.push({
-                    type: "suite",
-                    id: contractName,
-                    label: contractName,
-                    children: testFunctionNames,
-                    file: filePath,
-                    line: suiteLineNumber,
-                });
+
+                /// Ignore files that doesn't have any tests
+                if (testFunctionNames.length > 0) {
+                    testSuite.children.push({
+                        type: "suite",
+                        id: fileName + "::" + contractName,
+                        label: contractName,
+                        children: testFunctionNames,
+                        file: filePath,
+                        line: suiteLineNumber,
+                    });
+                }
             }
         }
     };
@@ -202,7 +207,12 @@ async function runNode(
             vscode.workspace.getConfiguration("foundryTestRunner").verbosity;
         // Execute a command and capture its output
         // prettier-ignore
-        const command = `cd ${projectRootDir} && forge test ${verbosity} --mc ${node.id}`;
+        let command;
+        if (node.id == "root") {
+            command = `cd ${projectRootDir} && forge test ${verbosity}`;
+        } else {
+            command = `cd ${projectRootDir} && forge test ${verbosity} --mc ${node.label}`;
+        }
 
         const child = cp.exec(command);
 
@@ -210,12 +220,11 @@ async function runNode(
             let output = data.toString().replace(/\x1b\[[0-9;]*m/g, "");
             if (output.includes("PASS") || output.includes("FAIL.")) {
                 let testResults = captureFunctionsAndResults(output);
-
                 outputChannel.appendLine(output);
                 for (var testResult in testResults) {
                     testStatesEmitter.fire(<TestEvent>{
                         type: "test",
-                        test: testResult,
+                        test: node.label + "::" + testResult,
                         state: testResults[testResult].toString(),
                     });
                 }
@@ -250,7 +259,7 @@ async function runNode(
 
         // Execute a command and capture its output
         // prettier-ignore
-        const command = `cd ${projectRootDir} && forge test ${verbosity} --match-test ${node.id.slice(0,-2)}`;
+        const command = `cd ${projectRootDir} && forge test ${verbosity} --match-test ${node.label.slice(0,-2)}`;
 
         testStatesEmitter.fire(<TestEvent>{
             type: "test",
