@@ -1,107 +1,107 @@
 {
-  "name": "vscode-foundry-test-adapter",
-  "displayName": "Foundry Test Runner",
-  "description": "Run your Foundry tests in the Sidebar of Visual Studio Code",
-  "icon": "assets/logo.png",
-  "author": "PraneshASP <praneshas2000@gmail.com>",
-  "publisher": "PraneshASP",
-  "version": "1.0.1",
-  "license": "MIT",
-  "homepage": "https://github.com/PraneshASP/vscode-foundry-test-runner",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/PraneshASP/vscode-foundry-test-runner.git"
-  },
-  "bugs": {
-    "url": "https://github.com/PraneshASP/vscode-foundry-test-runner/issues"
-  },
-  "categories": [
-    "Testing"
-  ],
-  "keywords": [
-    "Solidity",
-    "Foundry",
-    "EVM"
-  ],
-  "main": "out/main.js",
-  "scripts": {
-    "clean": "rimraf out *.vsix",
-    "build": "tsc",
-    "watch": "tsc -w",
-    "rebuild": "npm run clean && npm run build",
-    "package": "vsce package",
-    "publish": "vsce publish",
-    "format": "prettier --config .prettierrc 'src/**/*.ts' --write"
-  },
-  "dependencies": {
-    "tslib": "^1.9.3",
-    "vscode-test-adapter-api": "^1.7.0",
-    "vscode-test-adapter-util": "^0.7.0"
-  },
-  "devDependencies": {
-    "@types/node": "^18.14.2",
-    "@types/vscode": "~1.23.0",
-    "prettier": "^3.0.1",
-    "typescript": "^3.5.3",
-    "vsce": "^1.95.1"
-  },
-  "engines": {
-    "vscode": "^1.23.0"
-  },
-  "extensionDependencies": [
-    "hbenl.vscode-test-explorer"
-  ],
-  "activationEvents": [
-    "*"
-  ],
-  "contributes": {
-    "languages": [
-      {
-        "id": "solidity",
-        "extensions": [
-          ".sol",
-          ".t.sol"
-        ]
-      }
+    "name": "vscode-foundry-test-adapter",
+    "displayName": "Foundry Test Runner",
+    "description": "Run your Foundry tests in the Sidebar of Visual Studio Code",
+    "icon": "assets/logo.png",
+    "author": "PraneshASP <praneshas2000@gmail.com>",
+    "publisher": "PraneshASP",
+    "version": "1.1.0",
+    "license": "MIT",
+    "homepage": "https://github.com/PraneshASP/vscode-foundry-test-runner",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/PraneshASP/vscode-foundry-test-runner.git"
+    },
+    "bugs": {
+        "url": "https://github.com/PraneshASP/vscode-foundry-test-runner/issues"
+    },
+    "categories": [
+        "Testing"
     ],
-    "configuration": {
-      "type": "object",
-      "title": "FoundryTestRunner",
-      "codeLens": {
-        "testExplorer": {
-          "enabled": true
+    "keywords": [
+        "Solidity",
+        "Foundry",
+        "EVM"
+    ],
+    "main": "out/main.js",
+    "scripts": {
+        "clean": "rimraf out *.vsix",
+        "build": "tsc",
+        "watch": "tsc -w",
+        "rebuild": "npm run clean && npm run build",
+        "package": "vsce package",
+        "publish": "vsce publish",
+        "format": "prettier --config .prettierrc 'src/**/*.ts' --write"
+    },
+    "dependencies": {
+        "tslib": "^1.9.3",
+        "vscode-test-adapter-api": "^1.7.0",
+        "vscode-test-adapter-util": "^0.7.0"
+    },
+    "devDependencies": {
+        "@types/node": "^18.14.2",
+        "@types/vscode": "~1.23.0",
+        "prettier": "^3.0.1",
+        "typescript": "^3.5.3",
+        "vsce": "^1.95.1"
+    },
+    "engines": {
+        "vscode": "^1.23.0"
+    },
+    "extensionDependencies": [
+        "hbenl.vscode-test-explorer"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "contributes": {
+        "languages": [
+            {
+                "id": "solidity",
+                "extensions": [
+                    ".sol",
+                    ".t.sol"
+                ]
+            }
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "FoundryTestRunner",
+            "codeLens": {
+                "testExplorer": {
+                    "enabled": true
+                }
+            },
+            "properties": {
+                "foundryTestRunner.verbosity": {
+                    "type": "string",
+                    "default": "-vv",
+                    "enum": [
+                        "-v",
+                        "-vv",
+                        "-vvv",
+                        "-vvvv",
+                        "-vvvvv"
+                    ],
+                    "enumDescriptions": [
+                        "No logs printed",
+                        "Print logs for the tests",
+                        "Print execution traces if a test fails",
+                        "Print execution traces for all tests, and setup traces for failing tests",
+                        "Print execution and setup traces for all tests"
+                    ]
+                },
+                "foundryTestRunner.excludeTestContracts": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Enter the test contract names without .t.sol seperated by comma. \n For ex: InvariantTests, ForkTests"
+                },
+                "foundryTestRunner.excludeTestFunctions": {
+                    "type": "string",
+                    "default": "",
+                    "description": "Enter the test names without parentheses. \n For ex: testDeployment, testFuzz_AddNumbers"
+                }
+            }
         }
-      },
-      "properties": {
-        "foundryTestRunner.verbosity": {
-          "type": "string",
-          "default": "-vv",
-          "enum": [
-            "-v",
-            "-vv",
-            "-vvv",
-            "-vvvv",
-            "-vvvvv"
-          ],
-          "enumDescriptions": [
-            "No logs printed",
-            "Print logs for the tests",
-            "Print execution traces if a test fails",
-            "Print execution traces for all tests, and setup traces for failing tests",
-            "Print execution and setup traces for all tests"
-          ]
-        },
-        "foundryTestRunner.excludeTestContracts": {
-          "type": "string",
-          "default": "",
-          "description": "Enter the test contract names without .t.sol seperated by comma. \n For ex: InvariantTests, ForkTests"
-        },
-        "foundryTestRunner.excludeTestFunctions": {
-          "type": "string",
-          "default": "",
-          "description": "Enter the test names without parentheses. \n For ex: testDeployment, testFuzz_AddNumbers"
-        }
-      }
     }
-  }
 }
