@@ -40,19 +40,19 @@
     },
     "devDependencies": {
         "@types/node": "^18.14.2",
-        "@types/vscode": "~1.23.0",
+        "@types/vscode": "^1.82.0",
+        "@vscode/vsce": "^2.21.0",
         "prettier": "^3.0.1",
-        "typescript": "^3.5.3",
-        "vsce": "^1.95.1"
+        "typescript": "^5.2.2"
     },
     "engines": {
-        "vscode": "^1.23.0"
+        "vscode": "^1.82.0"
     },
-    "extensionDependencies": [
-        "hbenl.vscode-test-explorer"
-    ],
     "activationEvents": [
-        "*"
+        "workspaceContains:**/*.t.sol"
+    ],
+    "enabledApiProposals": [
+      "testCoverage"
     ],
     "contributes": {
         "languages": [
