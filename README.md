@@ -42,19 +42,19 @@ The usage of this extension is straightforward.
 
 ### 1.) Run a single test from the explorer
 
-<img src="./assets/single_test.gif" />
+<img src="./assets/single_test.webp" />
 
 ---
 
-### 2.) Run a test suite (all the tests in a contract) from the explorer
+### 2.) Run a test suite from the explorer
 
-<img src="./assets/run_suite.gif" />
+<img src="./assets/run_suite.webp" />
 
 ---
 
-### 3.) Run a test using the Codelens (inline option in the editor)
+### 3.) Run a test from editor inline
 
-<img src="./assets/codelens.gif" />
+<img src="./assets/codelens.webp" />
 
 ---
 
